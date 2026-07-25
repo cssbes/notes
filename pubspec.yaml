@@ -1,0 +1,30 @@
+name: dd
+description: A modern, fast, offline-first notes application.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  collection: ^1.18.0
+  cupertino_icons: ^1.0.8
+  flutter_riverpod: ^2.6.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  flutter_quill: ^11.0.0
+  uuid: ^4.5.1
+  path_provider: ^2.1.5
+  intl:
+  share_plus: ^10.1.4
+  file_picker: ^8.1.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
