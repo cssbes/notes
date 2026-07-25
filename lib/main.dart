@@ -2,21 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app.dart';
-import 'services/database_service.dart';
+import 'widgets/app_initializer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  debugPrint('[main] App started.');
 
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  try {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
 
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarBrightness: Brightness.dark,
-  ));
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarBrightness: Brightness.dark,
+    ));
+    debugPrint('[main] System chrome configured.');
+  } catch (e) {
+    debugPrint('[main] Failed to set system chrome: $e');
+  }
 
-  await DatabaseService.instance.initialize();
-
-  runApp(const ProviderScope(child: NotesApp()));
+  runApp(
+    ProviderScope(
+      child: AppInitializer(
+        onInitialized: (_) => const NotesApp(),
+      ),
+    ),
+  );
 }
