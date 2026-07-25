@@ -29,7 +29,7 @@ class EmptyState extends StatelessWidget {
               height: 80,
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.grey.shade800.withOpacity(0.5)
+                    ? Colors.grey.shade800.withValues(alpha: 0.5)
                     : Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(40),
               ),

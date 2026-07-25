@@ -368,7 +368,7 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
           const SizedBox(width: 24),
           _StatItem(label: 'Chars', value: '$_charCount', isDark: isDark),
           const SizedBox(width: 24),
-          _StatItem(label: 'Read', value: '${_readingTime} min', isDark: isDark),
+          _StatItem(label: 'Read', value: '$_readingTime min', isDark: isDark),
         ],
       ),
     );
@@ -620,7 +620,7 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
                             width: 32,
                             height: 32,
                             decoration: BoxDecoration(
-                              color: Color(tag.color).withOpacity(0.15),
+                              color: Color(tag.color).withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(Icons.label_rounded,
@@ -665,7 +665,7 @@ class _ToolbarButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 2),
       child: Material(
         color: isActive
-            ? AppColors.accent.withOpacity(0.15)
+            ? AppColors.accent.withValues(alpha: 0.15)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
         child: InkWell(

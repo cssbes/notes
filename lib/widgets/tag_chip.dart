@@ -27,11 +27,11 @@ class TagChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: selected
-              ? color.withOpacity(0.2)
+              ? color.withValues(alpha: 0.2)
               : (isDark ? AppColors.darkCard : AppColors.lightCard),
           borderRadius: BorderRadius.circular(20),
           border: selected
-              ? Border.all(color: color.withOpacity(0.5))
+              ? Border.all(color: color.withValues(alpha: 0.5))
               : null,
         ),
         child: Row(

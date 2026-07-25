@@ -37,7 +37,7 @@ class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         elevation: 0,
         backgroundColor: AppColors.lightSurface,
-        indicatorColor: AppColors.accent.withOpacity(0.15),
+        indicatorColor: AppColors.accent.withValues(alpha: 0.15),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return const TextStyle(
@@ -62,7 +62,7 @@ class AppTheme {
       dividerTheme: DividerThemeData(
         space: 0,
         thickness: 0.5,
-        color: AppColors.lightDivider.withOpacity(0.5),
+        color: AppColors.lightDivider.withValues(alpha: 0.5),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.accent,
@@ -131,7 +131,7 @@ class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         elevation: 0,
         backgroundColor: AppColors.darkSurface,
-        indicatorColor: AppColors.accent.withOpacity(0.2),
+        indicatorColor: AppColors.accent.withValues(alpha: 0.2),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return const TextStyle(
@@ -156,7 +156,7 @@ class AppTheme {
       dividerTheme: DividerThemeData(
         space: 0,
         thickness: 0.5,
-        color: AppColors.darkDivider.withOpacity(0.5),
+        color: AppColors.darkDivider.withValues(alpha: 0.5),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.accent,

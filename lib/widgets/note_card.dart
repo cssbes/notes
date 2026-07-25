@@ -31,7 +31,7 @@ class NoteCard extends StatelessWidget {
           color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
           borderRadius: BorderRadius.circular(14),
           border: note.isPinned
-              ? Border.all(color: AppColors.pinned.withOpacity(0.3), width: 1)
+              ? Border.all(color: AppColors.pinned.withValues(alpha: 0.3), width: 1)
               : null,
         ),
         child: Column(
