@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'app.dart';
+import 'services/database_service.dart';
 
 final String _tracePath = '/tmp/trace_${DateTime.now().millisecondsSinceEpoch}.txt';
-final List<String> _onScreenLog = [];
 
 void _trace(String msg) {
-  final ts = DateTime.now().toIso8601String();
-  final line = '$ts $msg';
+  final line = '${DateTime.now().toIso8601String()} $msg';
   print(line);
-  _onScreenLog.add(line);
-  if (_onScreenLog.length > 100) _onScreenLog.removeAt(0);
   try {
     File(_tracePath).writeAsStringSync('$line\n', mode: FileMode.append);
   } catch (_) {}
@@ -19,119 +19,132 @@ void _trace(String msg) {
 void main() {
   runZonedGuarded(() {
     _trace('1 main entered');
+
     WidgetsFlutterBinding.ensureInitialized();
     _trace('2 binding initialized');
+
     FlutterError.onError = (details) {
       _trace('FLUTTER ERROR: ${details.exception}');
     };
-    _trace('3 calling runApp');
-    runApp(const MyApp());
-    _trace('4 runApp returned');
+
+    try {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+      SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+        statusBarBrightness: Brightness.dark,
+      ));
+      _trace('3 system chrome done');
+    } catch (e) {
+      _trace('3 chrome FAILED: $e');
+    }
+
+    _trace('4 calling runApp');
+    runApp(
+      ProviderScope(
+        child: _AppRoot(),
+      ),
+    );
+    _trace('5 runApp returned');
   }, (error, stack) {
     _trace('FATAL ZONED ERROR: $error');
     _trace('FATAL ZONED STACK: $stack');
   });
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class _AppRoot extends StatefulWidget {
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<_AppRoot> createState() => _AppRootState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _AppRootState extends State<_AppRoot> {
+  bool _initializing = true;
+  bool _hasError = false;
+  String? _errorMessage;
+
   @override
   void initState() {
     super.initState();
-    _trace('5 MyApp initState');
+    _trace('6 _AppRoot initState');
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _trace('6 FIRST POST FRAME CALLBACK');
+      _trace('7 FIRST POST FRAME CALLBACK');
+      _initializeApp();
     });
+  }
+
+  Future<void> _initializeApp() async {
+    _trace('8 _initializeApp start');
+    try {
+      await DatabaseService.instance.initialize();
+      _trace('9 database initialized ok=${DatabaseService.instance.isInitialized} err=${DatabaseService.instance.hasError}');
+    } catch (e, stack) {
+      _trace('9 database FAILED: $e');
+      _trace('9 stack: $stack');
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _errorMessage = e.toString();
+          _initializing = false;
+        });
+      }
+      return;
+    }
+    if (mounted) {
+      setState(() => _initializing = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    _trace('7 MyApp build');
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: const Color(0xFF4CAF50),
-        body: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+    _trace('10 _AppRoot build init=$_initializing err=$_hasError');
+
+    if (_hasError) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          backgroundColor: Colors.red.shade900,
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                'Error: $_errorMessage',
+                style: const TextStyle(color: Colors.white, fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (_initializing) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorSchemeSeed: const Color(0xFF6C63FF),
+          brightness: Brightness.light,
+        ),
+        home: const Scaffold(
+          backgroundColor: Color(0xFF6C63FF),
+          body: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'APP IS RUNNING',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'No method channels used',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
-                ),
-                const SizedBox(height: 24),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.black26,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Text(
-                    'GREEN = FIRST FRAME RENDERED',
-                    style: TextStyle(
-                      color: Colors.yellow,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.black38,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Startup Trace:',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      ..._onScreenLog.map((line) => Padding(
-                            padding: const EdgeInsets.only(bottom: 2),
-                            child: Text(
-                              line,
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 10,
-                                fontFamily: 'monospace',
-                              ),
-                            ),
-                          )),
-                    ],
-                  ),
+                CircularProgressIndicator(color: Colors.white),
+                SizedBox(height: 16),
+                Text(
+                  'Loading...',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ],
             ),
           ),
         ),
-      ),
-    );
+      );
+    }
+
+    _trace('11 showing real app');
+    return const NotesApp();
   }
 }

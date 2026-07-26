@@ -7,8 +7,7 @@ import UIKit
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    NSLog("[NATIVE] application didFinishLaunchingWithOptions");
-    NSLog("[NATIVE] plugin registration: SKIPPED for diagnostic");
+    GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }
