@@ -10,7 +10,7 @@ final String _tracePath = '/tmp/trace_${DateTime.now().millisecondsSinceEpoch}.t
 
 void _trace(String msg) {
   final line = '${DateTime.now().toIso8601String()} $msg';
-  print(line);
+  debugPrint(line);
   try {
     File(_tracePath).writeAsStringSync('$line\n', mode: FileMode.append);
   } catch (_) {}
