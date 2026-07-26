@@ -41,39 +41,10 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      - name: Build Release .app
+      - name: Build iOS release
         run: flutter build ios --release --no-codesign
 
-      - name: Verify .app structure
-        run: |
-          APP_DIR="build/ios/iphoneos/Runner.app"
-          if [ ! -d "$APP_DIR" ]; then
-            echo "FATAL: Runner.app not found at $APP_DIR"
-            find build -name "*.app" -type d 2>/dev/null || true
-            exit 1
-          fi
-          echo "=== Runner.app contents ==="
-          ls -la "$APP_DIR"
-          echo ""
-          echo "=== Frameworks ==="
-          ls -la "$APP_DIR/Frameworks/" 2>/dev/null || echo "NO Frameworks directory!"
-          echo ""
-          echo "=== Flutter.framework ==="
-          ls -la "$APP_DIR/Frameworks/Flutter.framework/" 2>/dev/null || echo "NO Flutter.framework!"
-          echo ""
-          echo "=== App.framework ==="
-          ls -la "$APP_DIR/Frameworks/App.framework/" 2>/dev/null || echo "NO App.framework!"
-          echo ""
-          echo "=== Architectures in Runner binary ==="
-          lipo -info "$APP_DIR/Runner" 2>/dev/null || echo "lipo failed"
-          echo ""
-          echo "=== Architectures in Flutter.framework ==="
-          lipo -info "$APP_DIR/Frameworks/Flutter.framework/Flutter" 2>/dev/null || echo "lipo failed"
-          echo ""
-          echo "=== Architectures in App.framework ==="
-          lipo -info "$APP_DIR/Frameworks/App.framework/App" 2>/dev/null || echo "lipo failed"
-
-      - name: Generate IPA
+      - name: Package IPA
         run: |
           mkdir -p output
           cd build/ios/iphoneos
@@ -81,8 +52,6 @@ jobs:
           cp -r Runner.app Payload/
           zip -r ../../../output/Notes.ipa Payload
           cd ../../..
-          echo "IPA size:"
-          ls -lh output/Notes.ipa
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
