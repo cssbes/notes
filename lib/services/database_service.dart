@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../core/constants.dart';
@@ -27,7 +28,7 @@ class DatabaseService {
 
     try {
       debugPrint('[DB] Initializing Hive...');
-      await Hive.initFlutter();
+      await Hive.initFlutter().timeout(const Duration(seconds: 5));
       debugPrint('[DB] Hive initialized.');
 
       debugPrint('[DB] Opening boxes...');
@@ -36,11 +37,15 @@ class DatabaseService {
         Hive.openBox(AppConstants.foldersBox),
         Hive.openBox(AppConstants.tagsBox),
         Hive.openBox(AppConstants.settingsBox),
-      ]);
+      ]).timeout(const Duration(seconds: 5));
       debugPrint('[DB] All boxes opened.');
 
       _initialized = true;
       debugPrint('[DB] Database initialization complete.');
+    } on TimeoutException catch (e) {
+      _hasError = true;
+      _errorMessage = 'Database initialization timed out (5s): $e';
+      debugPrint('[DB] Database initialization TIMEOUT: $e');
     } catch (e, stack) {
       _hasError = true;
       _errorMessage = e.toString();
