@@ -4,10 +4,6 @@ import '../core/constants.dart';
 import '../core/theme/app_colors.dart';
 import '../models/app_settings.dart';
 import '../providers/settings_provider.dart';
-import '../providers/notes_provider.dart';
-import '../providers/folders_provider.dart';
-import '../providers/tags_provider.dart';
-import '../services/backup_service.dart';
 import '../widgets/settings_tile.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -83,7 +79,7 @@ class SettingsScreen extends ConsumerWidget {
                 icon: Icons.upload_file_rounded,
                 title: 'Export as JSON',
                 subtitle: 'Backup all notes, folders, and tags',
-                onTap: () => _exportJson(context),
+                onTap: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Coming soon'))),
                 iconColor: AppColors.tagGreen,
               ),
               const Divider(height: 1, indent: 66),
@@ -91,7 +87,7 @@ class SettingsScreen extends ConsumerWidget {
                 icon: Icons.download_rounded,
                 title: 'Import JSON',
                 subtitle: 'Restore from a backup file',
-                onTap: () => _importJson(context, ref),
+                onTap: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Coming soon'))),
                 iconColor: AppColors.tagOrange,
               ),
               const Divider(height: 1, indent: 66),
@@ -99,7 +95,7 @@ class SettingsScreen extends ConsumerWidget {
                 icon: Icons.description_outlined,
                 title: 'Export as Markdown',
                 subtitle: 'Export all notes as markdown',
-                onTap: () => _exportMarkdown(context),
+                onTap: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Coming soon'))),
                 iconColor: AppColors.tagTeal,
               ),
             ],
@@ -201,53 +197,6 @@ class SettingsScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _exportJson(BuildContext context) async {
-    try {
-      final path = await BackupService.instance.exportAsJson();
-      await BackupService.instance.shareFile(path);
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Export failed: $e')),
-        );
-      }
-    }
-  }
-
-  Future<void> _importJson(BuildContext context, WidgetRef ref) async {
-    try {
-      final success = await BackupService.instance.importFromJson();
-      if (success) {
-        ref.invalidate(notesProvider);
-        ref.invalidate(foldersProvider);
-        ref.invalidate(tagsProvider);
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Backup restored successfully')),
-          );
-        }
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Import failed: $e')),
-        );
-      }
-    }
-  }
-
-  Future<void> _exportMarkdown(BuildContext context) async {
-    try {
-      final path = await BackupService.instance.exportAsMarkdown();
-      await BackupService.instance.shareFile(path);
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Export failed: $e')),
-        );
-      }
-    }
-  }
 }
 
 class _SectionCard extends StatelessWidget {
