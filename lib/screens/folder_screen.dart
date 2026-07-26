@@ -8,7 +8,7 @@ import '../widgets/app_search_bar.dart';
 import '../widgets/note_card.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/folder_tile.dart';
-
+import 'note_editor_screen.dart';
 
 class FolderScreen extends ConsumerStatefulWidget {
   final String folderId;
@@ -154,10 +154,25 @@ class _FolderScreenState extends ConsumerState<FolderScreen> {
   }
 
   void _createNote() async {
-    // Note editor coming soon
+    final note = await ref
+        .read(notesProvider.notifier)
+        .createNote(folderId: widget.folderId);
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => NoteEditorScreen(noteId: note.id),
+        ),
+      );
+    }
   }
 
   void _openNote(Note note) {
-    // Note editor coming soon
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => NoteEditorScreen(noteId: note.id),
+      ),
+    );
   }
 }

@@ -11,6 +11,7 @@ import '../widgets/app_search_bar.dart';
 import '../widgets/note_card.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/folder_tile.dart';
+import 'note_editor_screen.dart';
 import 'folder_screen.dart';
 import 'settings_screen.dart';
 import 'trash_screen.dart';
@@ -463,11 +464,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _createNote() async {
-    // Note editor coming soon
+    final note = await ref.read(notesProvider.notifier).createNote();
+    if (mounted) {
+      Navigator.push(context, _routeBuilder(NoteEditorScreen(noteId: note.id)));
+    }
   }
 
   void _openNote(Note note) {
-    // Note editor coming soon
+    Navigator.push(
+      context,
+      _routeBuilder(NoteEditorScreen(noteId: note.id)),
+    );
   }
 
   void _showCreateFolderDialog(bool isDark) {
